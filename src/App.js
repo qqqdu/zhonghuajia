@@ -30,7 +30,7 @@ function Example() {
     // 高速路距离为 5
     highWayDir: 5,
     showPop: false,
-    speed: 1
+    speed: 3
   })
   // 声明一个叫 "count" 的 state 变量
   const [count, setCount] = useState(genderBad({
@@ -55,7 +55,6 @@ function Example() {
   // 演变
   useEffect(() => {
     savedCallback.current = (id) => {
-
       if(config.allBad >= config.row * config.col) {
         console.log('清除定时器')
         setStart(false)
@@ -77,23 +76,24 @@ function Example() {
         })
       })
       setCount([...count])
-      let start = 0
+      let allBad = 0
       count.flat(5).forEach(val => {
         if(val.name === 'bad')
-          start++
+        allBad++
       }, 0)
       // config.allBad = start
       setConfig({
         ...config,
-        allBad: start
+        allBad: allBad
       })
       setDay(day+1)
     }
-  });
+  }, [config, count, day]);
   useEffect(() => {
     if(!start) { return }
-    console.log('运行定时器')
+    console.log('开启定时器')
     const id = setInterval(tick, 1000 / config.speed)
+    tick()
     function tick() {
       savedCallback.current(id);
     }
@@ -119,7 +119,7 @@ function Example() {
   return (
     <header className="App-header">
       <Button type="primary" onClick={() => clickHistory(setHistory)}>查看历史数据</Button>
-      <Button className='bottom-btn' onClick={() => setConfig({
+      <Button className='bottom-btn' disabled={start} onClick={() => setConfig({
         ...config,
         showPop: true
       })}>设置演变属性</Button>
